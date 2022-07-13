@@ -7,6 +7,7 @@ import 'amfe-flexible'
 // 引入所有vant组件
 import Vant from 'vant'
 import 'vant/lib/index.css'
+import '@/assets/font/iconfont.css'
 
 Vue.use(Vant)
 

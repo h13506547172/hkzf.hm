@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <!-- 顶部标题 -->
-    <van-nav-bar title="账号登录" left-arrow />
+    <van-nav-bar title="账号登录" left-arrow @click-left=clickLeftFn />
     <!-- 登录表单 -->
     <van-form @submit="onSubmit">
       <van-field
@@ -61,6 +61,9 @@ export default {
           this.$toast.fail('登录失败，请重试')
         }
       }
+    },
+    clickLeftFn() {
+      this.$router.back()
     }
   }
 }

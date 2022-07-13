@@ -4,11 +4,57 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  // 登录路由
   {
     path: '/login',
     component: () => {
       return import('@/views/login/index.vue')
     }
+  },
+  // 首页找房资讯我的
+  {
+    path: '/',
+    component: () => {
+      return import('@/views/layout/index.vue')
+    },
+    children: [
+      {
+        path: '/',
+        component: () => {
+          return import('@/views/home/index')
+        },
+        meta: {
+          active: 0
+        }
+      },
+      {
+        path: '/zf',
+        component: () => {
+          return import('@/views/zf/index')
+        },
+        meta: {
+          active: 1
+        }
+      },
+      {
+        path: '/info',
+        component: () => {
+          return import('@/views/information/index')
+        },
+        meta: {
+          active: 2
+        }
+      },
+      {
+        path: '/my',
+        component: () => {
+          return import('@/views/my/index')
+        },
+        meta: {
+          active: 3
+        }
+      }
+    ]
   }
 ]
 

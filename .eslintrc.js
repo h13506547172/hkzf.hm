@@ -15,6 +15,7 @@ module.exports = {
     // 组件取名必须2个字
     'vue/multi-word-component-names': 'off',
     // 父传子双向绑定报错
-    'vue/no-mutating-props': 'off'
+    'vue/no-mutating-props': 'off',
+    'no-unneeded-ternary': 'off'
   }
 }
