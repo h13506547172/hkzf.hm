@@ -4,6 +4,13 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  // 房屋管理页面
+  {
+    path: '/rent',
+    component: () => {
+      return import('@/views/rent/index.vue')
+    }
+  },
   // 我的收藏页面
   {
     path: '/collect',

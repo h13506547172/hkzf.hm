@@ -1,8 +1,8 @@
 <template>
-  <div class="collect-page">
+  <div class="rent-page">
     <!-- 顶部标题 -->
-    <van-nav-bar title="我的收藏" left-arrow @click-left="clickLeftFn" />
-    <div class="home-item" v-for="(item,index) in collectArr" :key="index">
+    <van-nav-bar title="房屋管理" left-arrow @click-left="clickLeftFn" />
+    <div class="home-item" v-for="(item,index) in rentArr" :key="index">
       <div class="pic">
         <img
           :src="'http://liufusong.top:8080' + item.houseImg"
@@ -23,11 +23,11 @@
 </template>
 
 <script>
-import { collectAPI } from '@/api/index'
+import { rentAPI } from '@/api/index'
 export default {
   data() {
     return {
-      collectArr: []
+      rentArr: []
     }
   },
   methods: {
@@ -37,9 +37,9 @@ export default {
   },
   async created() {
     try {
-      const res = await collectAPI()
-      console.log(res)
-      this.collectArr = res.data.body
+      const res = await rentAPI()
+      // console.log(res)
+      this.rentArr = res.data.body
     } catch (err) {
       // console.log(err)
       this.$toast.fail('获取数据失败，请重试')
@@ -60,7 +60,7 @@ export default {
   white-space: nowrap;
   vertical-align: middle;
 }
-.collect-page {
+.rent-page {
   .van-nav-bar {
     background-color: #21b97a;
     /deep/ .van-nav-bar__title {
