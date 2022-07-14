@@ -4,6 +4,13 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  // 我的收藏页面
+  {
+    path: '/collect',
+    component: () => {
+      return import('@/views/collect/index.vue')
+    }
+  },
   // 登录路由
   {
     path: '/login',

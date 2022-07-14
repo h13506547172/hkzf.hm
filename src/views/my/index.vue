@@ -87,6 +87,9 @@ export default {
           path: '/login'
         })
       }
+      this.$router.push({
+        path: '/collect'
+      })
     },
     watchRent() {
       if (this.userToken === null) {
