@@ -2,19 +2,27 @@
   <div class="collect-page">
     <!-- 顶部标题 -->
     <van-nav-bar title="我的收藏" left-arrow @click-left="clickLeftFn" />
-    <div class="home-item" v-for="item in collectArr" :key="item.houseCode" :id="item.houseCode" @click="goDetail(item.houseCode)">
+    <div
+      class="home-item"
+      v-for="item in collectArr"
+      :key="item.houseCode"
+      :id="item.houseCode"
+      @click="goDetail(item.houseCode)"
+    >
       <div class="pic">
-        <img
-          :src="'http://liufusong.top:8080' + item.houseImg"
-          alt=""
-        />
+        <img :src="'http://liufusong.top:8080' + item.houseImg" alt="" />
       </div>
       <div class="text">
-        <h3 class="mu">{{item.title}}</h3>
-        <p class="mu">{{item.desc}}</p>
-        <van-tag type="success" v-for="(str,index) in item.tags" :key="index">{{str}}</van-tag>
+        <h3 class="mu">{{ item.title }}</h3>
+        <p class="mu">{{ item.desc }}</p>
+        <van-tag
+          type="success"
+          v-for="(str, index) in item.tags"
+          :key="index"
+          >{{ str }}</van-tag
+        >
         <div class="mu money">
-          <span>{{item.price}}</span>
+          <span>{{ item.price }}</span>
           元/月
         </div>
       </div>
@@ -46,12 +54,20 @@ export default {
     }
   },
   async created() {
+    // 加载动画
+    this.$toast.loading({
+      message: '加载中...',
+      forbidClick: true,
+      duration: 0
+    })
     try {
       const res = await collectAPI()
-      console.log(res)
+      // console.log(res)
       this.collectArr = res.data.body
+      this.$toast.clear()
     } catch (err) {
       // console.log(err)
+      this.$toast.clear()
       this.$toast.fail('获取数据失败，请重试')
     }
   }

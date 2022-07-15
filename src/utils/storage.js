@@ -11,10 +11,11 @@ export const setItem = (key, value) => {
 // 取值
 export const getItem = (key) => {
   // 如果不能转换为对象，则表示不是JSON字符串
+  const value = localStorage.getItem(key)
   try {
-    return JSON.parse(window.localStorage.getItem(key))
+    return JSON.parse(value)
   } catch (err) {
-    return null
+    return value
   }
 }
 

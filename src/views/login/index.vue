@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <!-- 顶部标题 -->
-    <van-nav-bar title="账号登录" left-arrow @click-left=clickLeftFn />
+    <van-nav-bar title="账号登录" left-arrow @click-left="clickLeftFn" />
     <!-- 登录表单 -->
     <van-form @submit="onSubmit">
       <van-field
@@ -44,22 +44,25 @@ export default {
       } else if (!/^[a-zA-Z0-9]{5,12}$/.exec(this.model.password)) {
         return this.$toast.fail('密码为5-12位字母数字')
       }
+      // 加载动画
+      this.$toast.loading({
+        message: '加载中...',
+        forbidClick: true,
+        duration: 0
+      })
       // 点击后通过表单验证触发事件
       try {
         const res = await loginAPI(this.model)
         // console.log(res)
         if (res.data.status === 200) {
-          this.$toast.success('登陆成功')
           this.$store.commit('setUserToken', res.data.body)
-          this.$router.back()
+          this.$router.push('/ ')
+          this.$toast.success('登陆成功')
+        } else if (res.data.status === 400) {
+          this.$toast.fail('你输入的账号或密码不正确')
         }
       } catch (err) {
-        // console.log(err)
-        if (err.data.status === 400) {
-          this.$toast.fail('你输入的账号或密码不正确')
-        } else {
-          this.$toast.fail('登录失败，请重试')
-        }
+        this.$toast.fail('登录失败，请重试')
       }
     },
     clickLeftFn() {

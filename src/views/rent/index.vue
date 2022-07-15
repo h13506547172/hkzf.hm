@@ -2,7 +2,15 @@
   <div class="rent-page">
     <!-- 顶部标题 -->
     <van-nav-bar title="房屋管理" left-arrow @click-left="clickLeftFn" />
-    <div class="home-item" v-for="(item, index) in rentArr" :key="index" @click="goDetail(item.houseCode)">
+    <div v-if="isShow">
+      你还没有房源， <router-link to="/ ">点击去发布</router-link>
+    </div>
+    <div
+      class="home-item"
+      v-for="(item, index) in rentArr"
+      :key="index"
+      @click="goDetail(item.houseCode)"
+    >
       <div class="pic">
         <img :src="'http://liufusong.top:8080' + item.houseImg" alt="" />
       </div>
@@ -29,7 +37,8 @@ import { rentAPI } from '@/api/index'
 export default {
   data() {
     return {
-      rentArr: []
+      rentArr: [],
+      isShow: true
     }
   },
   methods: {
@@ -48,12 +57,21 @@ export default {
     }
   },
   async created() {
+    // 加载动画
+    this.$toast.loading({
+      message: '加载中...',
+      forbidClick: true,
+      duration: 0
+    })
     try {
       const res = await rentAPI()
       // console.log(res)
       this.rentArr = res.data.body
+      this.$toast.clear()
+      this.isShow = false
     } catch (err) {
       // console.log(err)
+      this.$toast.clear()
       this.$toast.fail('获取数据失败，请重试')
     }
   }

@@ -2,8 +2,8 @@
   <div class="layout-page">
     <!-- 挂载的路由点 -->
     <router-view></router-view>
-    <van-tabbar v-model="active" active-color="#21b97a">
-      <van-tabbar-item replace to="/">
+    <van-tabbar route active-color="#21b97a">
+      <van-tabbar-item replace to="/ ">
         <template #icon>
           <i class="iconfont icon-shouye"></i>
         </template>
@@ -35,7 +35,7 @@
 export default {
   data() {
     return {
-      active: this.$route.meta.active
+
     }
   }
 }
