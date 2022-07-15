@@ -2,7 +2,7 @@
   <div class="collect-page">
     <!-- 顶部标题 -->
     <van-nav-bar title="我的收藏" left-arrow @click-left="clickLeftFn" />
-    <div class="home-item" v-for="(item,index) in collectArr" :key="index">
+    <div class="home-item" v-for="item in collectArr" :key="item.houseCode" :id="item.houseCode" @click="goDetail(item.houseCode)">
       <div class="pic">
         <img
           :src="'http://liufusong.top:8080' + item.houseImg"
@@ -33,6 +33,16 @@ export default {
   methods: {
     clickLeftFn() {
       this.$router.back()
+    },
+    // 跳转到详请页面并传值
+    goDetail(homeCode) {
+      // console.log(homeCode)
+      this.$router.push({
+        path: '/detail',
+        query: {
+          homeCode
+        }
+      })
     }
   },
   async created() {

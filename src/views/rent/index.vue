@@ -2,19 +2,21 @@
   <div class="rent-page">
     <!-- 顶部标题 -->
     <van-nav-bar title="房屋管理" left-arrow @click-left="clickLeftFn" />
-    <div class="home-item" v-for="(item,index) in rentArr" :key="index">
+    <div class="home-item" v-for="(item, index) in rentArr" :key="index" @click="goDetail(item.houseCode)">
       <div class="pic">
-        <img
-          :src="'http://liufusong.top:8080' + item.houseImg"
-          alt=""
-        />
+        <img :src="'http://liufusong.top:8080' + item.houseImg" alt="" />
       </div>
       <div class="text">
-        <h3 class="mu">{{item.title}}</h3>
-        <p class="mu">{{item.desc}}</p>
-        <van-tag type="success" v-for="(str,index) in item.tags" :key="index">{{str}}</van-tag>
+        <h3 class="mu">{{ item.title }}</h3>
+        <p class="mu">{{ item.desc }}</p>
+        <van-tag
+          type="success"
+          v-for="(str, index) in item.tags"
+          :key="index"
+          >{{ str }}</van-tag
+        >
         <div class="mu money">
-          <span>{{item.price}}</span>
+          <span>{{ item.price }}</span>
           元/月
         </div>
       </div>
@@ -33,6 +35,16 @@ export default {
   methods: {
     clickLeftFn() {
       this.$router.back()
+    },
+    // 跳转到详请页面并传值
+    goDetail(homeCode) {
+      // console.log(homeCode)
+      this.$router.push({
+        path: '/detail',
+        query: {
+          homeCode
+        }
+      })
     }
   },
   async created() {

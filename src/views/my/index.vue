@@ -97,6 +97,9 @@ export default {
           path: '/login'
         })
       }
+      this.$router.push({
+        path: '/rent'
+      })
     }
   },
   async created() {
