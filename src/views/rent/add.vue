@@ -8,7 +8,7 @@
       <div class="am-list-item">
         <div class="am-list-line">
           <div class="am-list-content">小区名称</div>
-          <div class="am-list-content am-list-extra">请输入小区名称</div>
+          <div class="am-list-content am-list-extra">{{ house.xiaoqu }}</div>
           <van-icon name="arrow" />
         </div>
       </div>
@@ -18,7 +18,11 @@
             租&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金
           </div>
           <div class="am-input-control">
-            <input type="text" placeholder="请输入租金/月" />
+            <input
+              type="text"
+              placeholder="请输入租金/月"
+              v-model="house.zujin"
+            />
           </div>
           <div class="am-list-content am-list-extra">￥/月</div>
         </div>
@@ -27,7 +31,11 @@
         <div class="am-list-line">
           <div class="am-list-content">建筑面积</div>
           <div class="am-input-control">
-            <input type="text" placeholder="请输入建筑面积" />
+            <input
+              type="text"
+              placeholder="请输入建筑面积"
+              v-model="house.mianji"
+            />
           </div>
           <div class="am-list-content am-list-extra">㎡</div>
         </div>
@@ -35,21 +43,21 @@
       <div class="am-list-item" @click="showPopup1">
         <div class="am-list-line">
           <div class="am-list-content">户型</div>
-          <div class="am-list-content am-list-extra">请选择</div>
+          <div class="am-list-content am-list-extra">{{ house.huxin }}</div>
           <van-icon name="arrow" />
         </div>
       </div>
       <div class="am-list-item" @click="showPopup2">
         <div class="am-list-line">
           <div class="am-list-content">所在楼层</div>
-          <div class="am-list-content am-list-extra">请选择</div>
+          <div class="am-list-content am-list-extra">{{ house.leiceng }}</div>
           <van-icon name="arrow" />
         </div>
       </div>
       <div class="am-list-item" @click="showPopup3">
         <div class="am-list-line">
           <div class="am-list-content">朝向</div>
-          <div class="am-list-content am-list-extra">请选择</div>
+          <div class="am-list-content am-list-extra">{{ house.chaoxiang }}</div>
           <van-icon name="arrow" />
         </div>
       </div>
@@ -61,65 +69,27 @@
             type="text"
             placeholder="请输入标题（例如：整租 小区名 2室 5000元）"
             class="ipt"
+            v-model="house.name"
           />
         </div>
       </div>
       <!-- 上传房屋图像 -->
       <div class="list-head am-list-header">房屋图像</div>
       <div class="up-imgbox">
-        <van-uploader :after-read="afterRead" />
+        <van-uploader :after-read="afterRead"/>
       </div>
       <!-- 房屋配置 -->
       <div class="list-head am-list-header">房屋配置</div>
       <van-grid square :column-num="5" :border="false">
-        <van-grid-item text="冰箱">
+        <van-grid-item
+          v-for="(item, index) in iconArr"
+          :key="index"
+          :text="item[0]"
+          @click="curFn(item[0])"
+          :class="{ current: house.peizhi.some(ite => ite === item[0]) }"
+        >
           <template #icon>
-            <i class="iconfont" :class="iconObj.冰箱"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="天然气">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.天然气"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="宽带">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.宽带"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="暖气">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.暖气"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="沙发">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.沙发"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="洗衣机">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.洗衣机"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="热水器">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.热水器"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="电视机">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.电视机"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="空调">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.空调"></i>
-          </template>
-        </van-grid-item>
-        <van-grid-item text="衣柜">
-          <template #icon>
-            <i class="iconfont" :class="iconObj.衣柜"></i>
+            <i class="iconfont" :class="item[1]"></i>
           </template>
         </van-grid-item>
       </van-grid>
@@ -143,8 +113,16 @@
       <div class="Add_cancel green">提交</div>
     </div>
     <!-- 户型选择面板 -->
-    <van-popup v-model="show" position="bottom" :style="{ height: '40%' }">
-      <van-area :area-list="areaList" :columns-num="1" />
+    <van-popup v-model="show1" position="bottom" :style="{ height: '40%' }">
+      <van-area :area-list="areaList1" :columns-num="1" @confirm="confirmFn1" />
+    </van-popup>
+    <!-- 楼层选择面板 -->
+    <van-popup v-model="show2" position="bottom" :style="{ height: '40%' }">
+      <van-area :area-list="areaList2" :columns-num="1" @confirm="confirmFn2" />
+    </van-popup>
+    <!-- 朝向选择面板 -->
+    <van-popup v-model="show3" position="bottom" :style="{ height: '40%' }">
+      <van-area :area-list="areaList3" :columns-num="1" @confirm="confirmFn3" />
     </van-popup>
   </div>
 </template>
@@ -153,9 +131,22 @@
 export default {
   data() {
     return {
+      house: {
+        huxin: '请选择',
+        leiceng: '请选择',
+        chaoxiang: '请选择',
+        name: '',
+        zujin: '',
+        mianji: '',
+        xiaoqu: '请输入小区名称',
+        img: '',
+        peizhi: [],
+        miaoshu: ''
+      },
       // 弹出面板的相关数据
-      show: false,
-      areaList: {},
+      show1: false,
+      show2: false,
+      show3: false,
       areaList1: {
         province_list: {
           110000: '一室',
@@ -185,38 +176,68 @@ export default {
         }
       },
       // 图标
-      iconObj: {
-        热水器: 'icon-haofangtuo400iconfont2reshuiqi',
-        天然气: 'icon-meiqitianranqi',
-        电视机: 'icon-dianshiji',
-        冰箱: 'icon-bingxiang',
-        洗衣机: 'icon-xiyiji',
-        空调: 'icon-kongtiao',
-        沙发: 'icon-shafa',
-        暖气: 'icon-nuanqi',
-        衣柜: 'icon-yigui',
-        宽带: 'icon-WIFI'
-      },
+      iconArr: [
+        ['热水器', 'icon-haofangtuo400iconfont2reshuiqi'],
+        ['天然气', 'icon-meiqitianranqi'],
+        ['电视机', 'icon-dianshiji'],
+        ['冰箱', 'icon-bingxiang'],
+        ['洗衣机', 'icon-xiyiji'],
+        ['空调', 'icon-kongtiao'],
+        ['沙发', 'icon-shafa'],
+        ['暖气', 'icon-nuanqi'],
+        ['衣柜', 'icon-yigui'],
+        ['宽带', 'icon-WIFI']
+      ],
+
       // area
       areaMsg: ''
     }
   },
   methods: {
+    // 上传图片
+    afterRead(file) {
+      // console.log(file)
+      this.house.img = file.content
+    },
     clickLeftFn() {
       this.$router.back()
     },
+    curFn(val) {
+      const index = this.house.peizhi.findIndex((item) => {
+        return item === val
+      })
+      // 如果存在就删除 不存在就添加
+      if (index === -1) {
+        this.house.peizhi.push(val)
+      } else {
+        this.house.peizhi.splice(index, 1)
+      }
+    },
     // 请选择户型
     showPopup1() {
-      this.show = true
-      this.areaList = this.areaList1
+      this.show1 = true
     },
     showPopup2() {
-      this.show = true
-      this.areaList = this.areaList2
+      this.show2 = true
     },
     showPopup3() {
-      this.show = true
-      this.areaList = this.areaList3
+      this.show3 = true
+    },
+    // 点击确认
+    confirmFn1(val) {
+      console.log(val)
+      this.house.huxin = val[0].name
+      this.show1 = false
+    },
+    confirmFn2(val) {
+      console.log(val)
+      this.house.leiceng = val[0].name
+      this.show2 = false
+    },
+    confirmFn3(val) {
+      console.log(val)
+      this.house.chaoxiang = val[0].name
+      this.show3 = false
     }
   }
 }
@@ -375,6 +396,9 @@ export default {
       background-color: #21b97a;
       color: #fff;
     }
+  }
+  .current {
+    color: #21b97a;
   }
 }
 </style>
