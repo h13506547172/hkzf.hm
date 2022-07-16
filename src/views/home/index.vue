@@ -40,7 +40,7 @@
           <img :src="srcs[2]" alt="" class="grid-img" />
         </template>
       </van-grid-item>
-      <van-grid-item text="去出租">
+      <van-grid-item text="去出租" @click="goAdd">
         <template #icon>
           <img :src="srcs[3]" alt="" class="grid-img" />
         </template>
@@ -101,6 +101,11 @@ export default {
     } catch (err) {
       // console.log(err)
       this.$toast.fail('获取数据失败，请重试')
+    }
+  },
+  methods: {
+    goAdd() {
+      this.$router.push('/rent/add')
     }
   }
 }

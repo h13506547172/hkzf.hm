@@ -71,19 +71,89 @@
       </div>
       <!-- 房屋配置 -->
       <div class="list-head am-list-header">房屋配置</div>
-      <!-- 户型选择面板 -->
-      <van-popup v-model="show" position="bottom" :style="{ height: '40%' }">
-        <van-area :area-list="areaList" :columns-num="1" />
-      </van-popup>
+      <van-grid square :column-num="5" :border="false">
+        <van-grid-item text="冰箱">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.冰箱"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="天然气">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.天然气"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="宽带">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.宽带"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="暖气">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.暖气"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="沙发">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.沙发"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="洗衣机">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.洗衣机"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="热水器">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.热水器"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="电视机">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.电视机"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="空调">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.空调"></i>
+          </template>
+        </van-grid-item>
+        <van-grid-item text="衣柜">
+          <template #icon>
+            <i class="iconfont" :class="iconObj.衣柜"></i>
+          </template>
+        </van-grid-item>
+      </van-grid>
     </div>
+    <!-- 房屋描述 -->
+    <div class="house-area">
+      <div class="title am-list-header">房屋描述</div>
+      <div class="area-con">
+        <van-field
+          v-model="areaMsg"
+          rows="2"
+          autosize
+          type="textarea"
+          placeholder="请输入留言"
+          show-word-limit
+        />
+      </div>
+    </div>
+    <div class="Add_bottom">
+      <div class="Add_cancel">取消</div>
+      <div class="Add_cancel green">提交</div>
+    </div>
+    <!-- 户型选择面板 -->
+    <van-popup v-model="show" position="bottom" :style="{ height: '40%' }">
+      <van-area :area-list="areaList" :columns-num="1" />
+    </van-popup>
   </div>
 </template>
 
 <script>
-
 export default {
   data() {
     return {
+      // 弹出面板的相关数据
       show: false,
       areaList: {},
       areaList1: {
@@ -113,7 +183,22 @@ export default {
           170000: '西南',
           180000: '西北'
         }
-      }
+      },
+      // 图标
+      iconObj: {
+        热水器: 'icon-haofangtuo400iconfont2reshuiqi',
+        天然气: 'icon-meiqitianranqi',
+        电视机: 'icon-dianshiji',
+        冰箱: 'icon-bingxiang',
+        洗衣机: 'icon-xiyiji',
+        空调: 'icon-kongtiao',
+        沙发: 'icon-shafa',
+        暖气: 'icon-nuanqi',
+        衣柜: 'icon-yigui',
+        宽带: 'icon-WIFI'
+      },
+      // area
+      areaMsg: ''
     }
   },
   methods: {
@@ -139,6 +224,8 @@ export default {
 
 <style lang="less" scoped>
 .rentAdd-page {
+  padding-bottom: 70px;
+  background-color: #f5f5f9;
   // 头部navbar
   .van-nav-bar {
     background-color: #21b97a;
@@ -236,6 +323,57 @@ export default {
     .up-imgbox {
       padding: 9px 8px 0;
       margin-bottom: 15px;
+    }
+    // 房屋配套设施
+    /deep/ .van-grid-item {
+      .iconfont {
+        font-size: 23px;
+      }
+
+      .van-grid-item__text {
+        font-size: 14px;
+      }
+    }
+  }
+  .house-area {
+    margin-top: 20px;
+    .title {
+      border-bottom: 0.02667rem solid #f2f2f2;
+      background-color: #fff;
+      color: #333;
+      font-size: 0.37333rem;
+      padding: 0.4rem 0.4rem 0.24rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+  .area-con {
+    min-height: 144px;
+    .van-cell {
+      min-height: 144px;
+    }
+  }
+  .Add_bottom {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    height: 45px;
+    z-index: 1;
+    color: #fff;
+    font-size: 15px;
+    background-color: #fff;
+    .Add_cancel {
+      flex: 1;
+      color: #21b97a;
+      background-color: #fff;
+      height: 100%;
+      line-height: 45px;
+    }
+    .green {
+      background-color: #21b97a;
+      color: #fff;
     }
   }
 }
