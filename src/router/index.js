@@ -4,6 +4,13 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  // 发布房源页面
+  {
+    path: '/rent/add',
+    component: () => {
+      return import('@/views/rent/add.vue')
+    }
+  },
   // 详细页面
   {
     path: '/detail',
