@@ -6,3 +6,9 @@ export const homeDel = (homeCode) => {
     method: 'GET'
   })
 }
+export const shoucang = (homeCode) => {
+  return request({
+    url: `/user/favorites/${homeCode}`,
+    method: 'POST'
+  })
+}

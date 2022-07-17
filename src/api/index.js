@@ -5,6 +5,7 @@ import { collect } from './collect'
 import { rent } from './rent'
 import { homeDel } from './detail'
 import { pubHouse } from './add'
+import { getCity, hotCity } from './city'
 
 // 登录接口
 export const loginAPI = login
@@ -14,3 +15,5 @@ export const collectAPI = collect
 export const rentAPI = rent
 export const homeDelAPI = homeDel
 export const pubHouseAPI = pubHouse
+export const getCityAPI = getCity
+export const hotCityAPI = hotCity

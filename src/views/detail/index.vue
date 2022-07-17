@@ -2,7 +2,9 @@
   <div class="detail-page">
     <!-- 底部按钮 -->
     <div class="fixedBottom">
-      <div class="fixed-item">收藏</div>
+      <div class="fixed-item" @click="shoucangFn">
+        <span class="iconfont icon-shoucang"></span> 收藏
+      </div>
       <div class="fixed-item">在线咨询</div>
       <div class="fixed-item">电话预约</div>
     </div>
@@ -20,9 +22,10 @@
       <div class="tags">
         <span
           class="tag"
-          v-for="(item,index) in detailObj.tags"
+          v-for="(item, index) in detailObj.tags"
           :key="index"
-        >{{item}}</span>
+          >{{ item }}</span
+        >
       </div>
       <!-- 中间盒子 -->
       <div class="cenBox">
@@ -31,11 +34,11 @@
           <div class="text2">租金</div>
         </div>
         <div class="item">
-          <p class="text1">{{detailObj.roomType}}</p>
+          <p class="text1">{{ detailObj.roomType }}</p>
           <div class="text2">房型</div>
         </div>
         <div class="item">
-          <p class="text1">{{detailObj.size}}</p>
+          <p class="text1">{{ detailObj.size }}</p>
           <div class="text2">面积</div>
         </div>
       </div>
@@ -43,26 +46,32 @@
       <div class="box-bottom">
         <div class="box-bottom-item">
           <div><span class="title">装修：</span>精装</div>
-          <div><span class="title">楼层：</span>{{detailObj.floor}}</div>
+          <div><span class="title">楼层：</span>{{ detailObj.floor }}</div>
         </div>
         <div class="box-bottom-item">
-          <div><span class="title">朝向：</span>{{detailObj.oriented[0]}}</div>
+          <div>
+            <span class="title">朝向：</span>{{ detailObj.oriented[0] }}
+          </div>
           <div><span class="title">类型：</span>普通住宅</div>
         </div>
       </div>
     </div>
     <!-- 地图部分 -->
     <div class="map">
-      <div class="map-title">小区：{{detailObj.community}}</div>
+      <div class="map-title">小区：{{ detailObj.community }}</div>
       <div class="map-con"></div>
     </div>
     <!-- 房屋配套 -->
     <div class="mating">
       <div class="title">房屋配套</div>
       <div class="mat-list">
-        <div class="mat-item" v-for="(item,index) in detailObj.supporting" :key="index">
+        <div
+          class="mat-item"
+          v-for="(item, index) in detailObj.supporting"
+          :key="index"
+        >
           <p><i class="iconfont" :class="iconObj[item]"></i></p>
-          {{item}}
+          {{ item }}
         </div>
       </div>
     </div>
@@ -168,7 +177,9 @@ export default {
   methods: {
     clickLeftFn() {
       this.$router.back()
-    }
+    },
+    // 收藏事件
+    shoucangFn() {}
   }
 }
 </script>
