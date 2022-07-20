@@ -3,7 +3,9 @@
     <!-- 底部按钮 -->
     <div class="fixedBottom">
       <div class="fixed-item" @click="shoucangFn">
-        <span class="iconfont icon-shoucang"></span> 收藏
+        <span class="cur" v-if="isShoucang">★</span>
+        <span class="iconfont icon-shoucang" v-else></span>
+        收藏
       </div>
       <div class="fixed-item">在线咨询</div>
       <div class="fixed-item">电话预约</div>
@@ -145,11 +147,17 @@
 </template>
 
 <script>
-import { homeDelAPI } from '@/api/index'
+import {
+  homeDelAPI,
+  isShoucangAPI,
+  addShoucangAPI,
+  removeShoucangAPI
+} from '@/api/index'
 export default {
   data() {
     return {
       detailObj: {},
+      isShoucang: false,
       iconObj: {
         热水器: 'icon-haofangtuo400iconfont2reshuiqi',
         天然气: 'icon-meiqitianranqi',
@@ -165,21 +173,48 @@ export default {
     }
   },
   async created() {
-    // console.log(this.iconObj)
+    // 获取当前房屋的信息
     try {
       const res = await homeDelAPI(this.$route.query.homeCode)
-      console.log(res)
+      // console.log(res)
       this.detailObj = res.data.body
+      // 查看目前房源是否已收藏
+      const res2 = await isShoucangAPI(this.$route.query.homeCode)
+      // console.log(res2)
+      this.isShoucang = res2.data.body.isFavorite
     } catch (err) {
-      console.log(err)
+      this.$toast.fail('获取房屋数据失败')
     }
   },
   methods: {
     clickLeftFn() {
       this.$router.back()
     },
-    // 收藏事件
-    shoucangFn() {}
+    // 添加收藏事件
+    async shoucangFn() {
+      // 已收藏就删除
+      if (this.isShoucang) {
+        try {
+          await removeShoucangAPI(this.$route.query.homeCode)
+          this.$toast.success('取消收藏成功')
+          const res2 = await isShoucangAPI(this.$route.query.homeCode)
+          // console.log(res2)
+          this.isShoucang = res2.data.body.isFavorite
+        } catch (error) {
+          this.$toast.fail('获取房屋数据失败')
+        }
+        return
+      }
+      try {
+        await addShoucangAPI(this.$route.query.homeCode)
+        this.$toast.success('收藏成功')
+        const res2 = await isShoucangAPI(this.$route.query.homeCode)
+        // console.log(res2)
+        this.isShoucang = res2.data.body.isFavorite
+      } catch (error) {
+        this.$toast.fail('获取房屋数据失败')
+      }
+    }
   }
 }
 </script>
@@ -194,6 +229,10 @@ body {
   margin: 0;
 }
 .detail-page {
+  .cur {
+    font-size: 25px;
+    color: #21b97a;
+  }
   padding-bottom: 50px;
   // 底部导航
   .fixedBottom {
@@ -235,6 +274,9 @@ body {
     line-height: 150px;
     text-align: center;
     background-color: #39a9ed;
+    img {
+      width: 100%;
+    }
   }
   // 房屋信息
   .HouseDetail_info {

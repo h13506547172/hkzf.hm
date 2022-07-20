@@ -11,9 +11,17 @@ const routes = [
       return import('@/views/city/index')
     }
   },
+  // 搜索小区页面
+  {
+    path: '/rent/search',
+    component: () => {
+      return import('@/views/rent/search')
+    }
+  },
   // 发布房源页面
   {
     path: '/rent/add',
+    name: 'rentadd',
     component: () => {
       return import('@/views/rent/add.vue')
     }
