@@ -2,7 +2,11 @@
   <div class="detail-page">
     <!-- 底部按钮 -->
     <div class="fixedBottom">
-      <div class="fixed-item">收藏</div>
+      <div class="fixed-item" @click="shoucangFn">
+        <span class="cur" v-if="isShoucang">★</span>
+        <span class="iconfont icon-shoucang" v-else></span>
+        收藏
+      </div>
       <div class="fixed-item">在线咨询</div>
       <div class="fixed-item">电话预约</div>
     </div>
@@ -20,9 +24,10 @@
       <div class="tags">
         <span
           class="tag"
-          v-for="(item,index) in detailObj.tags"
+          v-for="(item, index) in detailObj.tags"
           :key="index"
-        >{{item}}</span>
+          >{{ item }}</span
+        >
       </div>
       <!-- 中间盒子 -->
       <div class="cenBox">
@@ -31,11 +36,11 @@
           <div class="text2">租金</div>
         </div>
         <div class="item">
-          <p class="text1">{{detailObj.roomType}}</p>
+          <p class="text1">{{ detailObj.roomType }}</p>
           <div class="text2">房型</div>
         </div>
         <div class="item">
-          <p class="text1">{{detailObj.size}}</p>
+          <p class="text1">{{ detailObj.size }}</p>
           <div class="text2">面积</div>
         </div>
       </div>
@@ -43,26 +48,32 @@
       <div class="box-bottom">
         <div class="box-bottom-item">
           <div><span class="title">装修：</span>精装</div>
-          <div><span class="title">楼层：</span>{{detailObj.floor}}</div>
+          <div><span class="title">楼层：</span>{{ detailObj.floor }}</div>
         </div>
         <div class="box-bottom-item">
-          <div><span class="title">朝向：</span>{{detailObj.oriented[0]}}</div>
+          <div>
+            <span class="title">朝向：</span>{{ detailObj.oriented[0] }}
+          </div>
           <div><span class="title">类型：</span>普通住宅</div>
         </div>
       </div>
     </div>
     <!-- 地图部分 -->
     <div class="map">
-      <div class="map-title">小区：{{detailObj.community}}</div>
+      <div class="map-title">小区：{{ detailObj.community }}</div>
       <div class="map-con"></div>
     </div>
     <!-- 房屋配套 -->
     <div class="mating">
       <div class="title">房屋配套</div>
       <div class="mat-list">
-        <div class="mat-item" v-for="(item,index) in detailObj.supporting" :key="index">
+        <div
+          class="mat-item"
+          v-for="(item, index) in detailObj.supporting"
+          :key="index"
+        >
           <p><i class="iconfont" :class="iconObj[item]"></i></p>
-          {{item}}
+          {{ item }}
         </div>
       </div>
     </div>
@@ -136,11 +147,17 @@
 </template>
 
 <script>
-import { homeDelAPI } from '@/api/index'
+import {
+  homeDelAPI,
+  isShoucangAPI,
+  addShoucangAPI,
+  removeShoucangAPI
+} from '@/api/index'
 export default {
   data() {
     return {
       detailObj: {},
+      isShoucang: false,
       iconObj: {
         热水器: 'icon-haofangtuo400iconfont2reshuiqi',
         天然气: 'icon-meiqitianranqi',
@@ -156,18 +173,47 @@ export default {
     }
   },
   async created() {
-    // console.log(this.iconObj)
+    // 获取当前房屋的信息
     try {
       const res = await homeDelAPI(this.$route.query.homeCode)
-      console.log(res)
+      // console.log(res)
       this.detailObj = res.data.body
+      // 查看目前房源是否已收藏
+      const res2 = await isShoucangAPI(this.$route.query.homeCode)
+      // console.log(res2)
+      this.isShoucang = res2.data.body.isFavorite
     } catch (err) {
-      console.log(err)
+      this.$toast.fail('获取房屋数据失败')
     }
   },
   methods: {
     clickLeftFn() {
       this.$router.back()
+    },
+    // 添加收藏事件
+    async shoucangFn() {
+      // 已收藏就删除
+      if (this.isShoucang) {
+        try {
+          await removeShoucangAPI(this.$route.query.homeCode)
+          this.$toast.success('取消收藏成功')
+          const res2 = await isShoucangAPI(this.$route.query.homeCode)
+          // console.log(res2)
+          this.isShoucang = res2.data.body.isFavorite
+        } catch (error) {
+          this.$toast.fail('获取房屋数据失败')
+        }
+        return
+      }
+      try {
+        await addShoucangAPI(this.$route.query.homeCode)
+        this.$toast.success('收藏成功')
+        const res2 = await isShoucangAPI(this.$route.query.homeCode)
+        // console.log(res2)
+        this.isShoucang = res2.data.body.isFavorite
+      } catch (error) {
+        this.$toast.fail('获取房屋数据失败')
+      }
     }
   }
 }
@@ -183,6 +229,10 @@ body {
   margin: 0;
 }
 .detail-page {
+  .cur {
+    font-size: 25px;
+    color: #21b97a;
+  }
   padding-bottom: 50px;
   // 底部导航
   .fixedBottom {
@@ -224,6 +274,9 @@ body {
     line-height: 150px;
     text-align: center;
     background-color: #39a9ed;
+    img {
+      width: 100%;
+    }
   }
   // 房屋信息
   .HouseDetail_info {

@@ -5,7 +5,7 @@
     <div class="list-head">房源信息</div>
     <!-- 填写的信息 -->
     <div class="am-list-body">
-      <div class="am-list-item">
+      <div class="am-list-item" @click="goSearch">
         <div class="am-list-line">
           <div class="am-list-content">小区名称</div>
           <div class="am-list-content am-list-extra">{{ house.xiaoqu }}</div>
@@ -75,9 +75,22 @@
       </div>
       <!-- 上传房屋图像 -->
       <div class="list-head am-list-header">房屋图像</div>
-      <div class="up-imgbox">
-        <van-uploader :after-read="afterRead"/>
-      </div>
+      <form
+        action="http://127.0.0.1:3000/houses/image"
+        enctype="multipart/form-data"
+        method="post"
+        id="formImg"
+      >
+        <div class="up-imgbox">
+          <van-uploader
+            v-model="house.img"
+            multiple
+            :max-count="3"
+            :after-read="afterRead"
+          />
+        </div>
+      </form>
+
       <!-- 房屋配置 -->
       <div class="list-head am-list-header">房屋配置</div>
       <van-grid square :column-num="5" :border="false">
@@ -86,7 +99,7 @@
           :key="index"
           :text="item[0]"
           @click="curFn(item[0])"
-          :class="{ current: house.peizhi.some(ite => ite === item[0]) }"
+          :class="{ current: house.peizhi.some((ite) => ite === item[0]) }"
         >
           <template #icon>
             <i class="iconfont" :class="item[1]"></i>
@@ -99,7 +112,7 @@
       <div class="title am-list-header">房屋描述</div>
       <div class="area-con">
         <van-field
-          v-model="areaMsg"
+          v-model="house.miaoshu"
           rows="2"
           autosize
           type="textarea"
@@ -110,7 +123,7 @@
     </div>
     <div class="Add_bottom">
       <div class="Add_cancel">取消</div>
-      <div class="Add_cancel green">提交</div>
+      <div class="Add_cancel green" @click="submit">提交</div>
     </div>
     <!-- 户型选择面板 -->
     <van-popup v-model="show1" position="bottom" :style="{ height: '40%' }">
@@ -128,7 +141,12 @@
 </template>
 
 <script>
+import { pubRequireAPI, upImgAPI, pubHouseAPI } from '@/api/index'
+
 export default {
+  created() {
+    this.getData()
+  },
   data() {
     return {
       house: {
@@ -138,11 +156,13 @@ export default {
         name: '',
         zujin: '',
         mianji: '',
-        xiaoqu: '请输入小区名称',
-        img: '',
+        xiaoqu: this.$route.params.communityName || '请选择小区',
+        img: [],
         peizhi: [],
         miaoshu: ''
       },
+      // 楼层 朝向 户型
+      roomData: {},
       // 弹出面板的相关数据
       show1: false,
       show2: false,
@@ -194,10 +214,72 @@ export default {
     }
   },
   methods: {
+    // 获取上传房屋所需的数据
+    async getData() {
+      try {
+        // 获取发布数据对应的字段
+        const res = await pubRequireAPI()
+        this.roomData = res.data.body
+        // console.log(this.roomData)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 点击提交上传数据
+    async submit() {
+      this.$toast.loading({
+        message: '加载中...',
+        forbidClick: true,
+        duration: 0
+      })
+      try {
+        // console.log(this.house.img[0].file)
+        const formData = new FormData()
+        this.house.img.forEach((item) => {
+          formData.append('file', item.file)
+        })
+        // 上传图片
+        const res = await upImgAPI(formData)
+        console.log(res)
+        // 转换图片格式
+        let imgStr = res.data.body
+        imgStr = imgStr.join(',')
+        // 转换楼层等格式
+        const floor = this.roomData.floor.find((item) => {
+          return this.house.leiceng === item.label
+        })
+        const oriented = this.roomData.oriented.find((item) => {
+          return this.house.chaoxiang === item.label
+        })
+        const roomType = this.roomData.roomType.find((item) => {
+          return this.house.huxin === item.label
+        })
+        const res2 = await pubHouseAPI({
+          title: this.house.name,
+          description: this.house.miaoshu,
+          houseImg: imgStr,
+          oriented: oriented.value,
+          supporting: this.house.peizhi.join(','),
+          price: this.house.zujin,
+          roomType: roomType.value,
+          size: this.house.mianji,
+          floor: floor.value,
+          community: this.$route.params.community
+        })
+        console.log(res2)
+        this.$toast.success('上传成功')
+      } catch (error) {
+        this.$toast.fail('上传失败')
+      }
+    },
+    // 跳转到查询小区页面
+    goSearch() {
+      this.$router.push('/rent/search')
+    },
     // 上传图片
     afterRead(file) {
-      // console.log(file)
-      this.house.img = file.content
+      // 会自动添加到数组中
+      // console.log(this.house.img[0])
     },
     clickLeftFn() {
       this.$router.back()

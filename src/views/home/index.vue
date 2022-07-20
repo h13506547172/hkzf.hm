@@ -10,13 +10,14 @@
     <div class="search-box">
       <van-search
         v-model="searchIpt"
-        label="广州"
         input-align="left"
         placeholder="  请输入小区或地址"
         background="rgba(0,0,0,0)"
       >
         <template #left-icon>
-          <van-icon name="arrow-down" />
+          <div class="leftbox" @click="goCity">
+            <span>{{$store.state.cityName}}</span> <van-icon name="arrow-down" />
+          </div>
         </template>
       </van-search>
       <div class="icon-map">
@@ -106,6 +107,9 @@ export default {
   methods: {
     goAdd() {
       this.$router.push('/rent/add')
+    },
+    goCity() {
+      this.$router.push('/city')
     }
   }
 }
@@ -142,6 +146,13 @@ export default {
       .icon-map {
         font-size: 25px;
         color: #fff;
+      }
+    }
+    /deep/ .van-field__left-icon {
+      width: 40px;
+      .leftbox {
+        display: flex;
+        font-size: 12px;
       }
     }
     // 细节微调
@@ -186,7 +197,7 @@ export default {
       height: 50px;
       background-color: #fff;
       img {
-        font-size:12px;
+        font-size: 12px;
         margin: 0 10px;
         width: 50px;
         height: 50px;
