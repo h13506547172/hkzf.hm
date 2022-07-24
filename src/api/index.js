@@ -8,6 +8,7 @@ import { pubHouse, pubRequire, upImg } from './add'
 import { getCity, hotCity } from './city'
 // 全部导入并导出
 export * from './rentSearch'
+export * from './zf'
 
 // 登录接口
 export const loginAPI = login

@@ -25,21 +25,276 @@
       </template>
     </van-nav-bar>
     <!-- 筛选标签 -->
+    <van-dropdown-menu>
+      <!-- 区域地铁 -->
+      <van-dropdown-item title="区域">
+        <template #default>
+          <van-area
+            title=""
+            confirm-button-text=" "
+            cancel-button-text=" "
+            :area-list="areaList1"
+          />
+          <div>
+            <van-button type="default" style="width: 40%">取消</van-button>
+            <van-button type="primary" style="width: 60%">确认</van-button>
+          </div>
+        </template>
+      </van-dropdown-item>
+      <!-- 方式 -->
+      <van-dropdown-item title="方式">
+        <template #default>
+          <van-area
+            title=""
+            confirm-button-text=" "
+            cancel-button-text=" "
+            :columns-num="1"
+            :area-list="areaList2"
+          />
+          <div>
+            <van-button type="default" style="width: 40%">取消</van-button>
+            <van-button type="primary" style="width: 60%">确认</van-button>
+          </div>
+        </template>
+      </van-dropdown-item>
+      <!-- 租金 -->
+      <van-dropdown-item title="租金">
+        <template #default>
+          <van-area
+            title=""
+            confirm-button-text=" "
+            cancel-button-text=" "
+            :columns-num="1"
+            :area-list="areaList3"
+          />
+          <div>
+            <van-button type="default" style="width: 40%">取消</van-button>
+            <van-button type="primary" style="width: 60%">确认</van-button>
+          </div>
+        </template>
+      </van-dropdown-item>
+      <!-- 筛选 -->
+      <van-dropdown-item title="筛选" @open="showFn"> </van-dropdown-item>
+    </van-dropdown-menu>
+    <!-- 右边弹出筛选 -->
+    <van-popup
+     duration="0"
+      v-model="filterShow"
+      position="right"
+      :style="{ height: '100%', width: '70%' }"
+      class="FilterMore"
+    >
+      <div class="title">户型</div>
+      <div class="box">
+        <div
+          class="tag"
+          v-for="item in condition.roomType"
+          :key="item.value"
+          :class="{
+            current: curNameArr.some((ite) => ite === item.label)
+          }"
+          @click="addCondition(item)"
+        >
+          {{ item.label }}
+        </div>
+      </div>
+      <div class="title">朝向</div>
+      <div class="box">
+        <div
+          class="tag"
+          v-for="item in condition.oriented"
+          :key="item.value"
+          :class="{
+            current: curNameArr.some((ite) => ite === item.label)
+          }"
+          @click="addCondition(item)"
+        >
+          {{ item.label }}
+        </div>
+      </div>
+      <div class="title">楼层</div>
+      <div class="box">
+        <div
+          class="tag"
+          v-for="item in condition.floor"
+          :key="item.value"
+          :class="{
+            current: curNameArr.some((ite) => ite === item.label)
+          }"
+          @click="addCondition(item)"
+        >
+          {{ item.label }}
+        </div>
+      </div>
+      <div class="title">房屋亮点</div>
+      <div class="box">
+        <div
+          class="tag"
+          v-for="item in condition.characteristic"
+          :key="item.value"
+        >
+          {{ item.label }}
+        </div>
+      </div>
+    </van-popup>
+    <!-- 按钮 -->
+    <div class="btn-box">
+      <van-button type="default" style="width: 40%">取消</van-button>
+      <van-button type="primary" style="width: 60%">确认</van-button>
+    </div>
   </div>
 </template>
 
 <script>
+import { cityIdAPI, filtrateAPI } from '@/api/index'
 export default {
   data() {
-    return {}
+    return {
+      // 城市id
+      cityValue: '',
+      // 所有查询条件
+      condition: {},
+      // 弹出层
+      filterShow: true,
+      // 区域和地铁
+      areaList1: {
+        province_list: {
+          110000: '区域',
+          120000: '地铁'
+        },
+        city_list: {
+          110100: ''
+        },
+        county_list: {
+          110101: '',
+          110102: ''
+        }
+      },
+      // 方式
+      areaList2: {
+        province_list: {}
+      },
+      // 租金
+      areaList3: {
+        province_list: {}
+      },
+      // 右边弹出层选中的数组
+      curNameArr: [],
+      curValueArr: []
+    }
   },
   methods: {
+    // 筛选按钮
+    showFn() {
+      console.log(11)
+      this.filterShow = true
+    },
+    // 点击筛选中的项添加筛选条件
+    addCondition(obj) {
+      this.curNameArr.push(obj.label)
+      this.curValueArr.push(obj.value)
+    },
     goCity() {
       this.$router.push('/city')
     },
     clickLeftFn() {
       this.$router.back()
+    },
+    // 获取当前城市id的方法
+    async getCityId() {
+      try {
+        const res = await cityIdAPI(this.$store.state.cityName)
+        // console.log(res)
+        this.cityValue = res.data.body.value
+      } catch (err) {
+        this.$toast.fail('获取信息失败')
+      }
+    },
+    // 获取筛选条件
+    async getFiltrate() {
+      try {
+        const res = await filtrateAPI(this.cityValue)
+        const { data } = res
+        this.condition = data.body
+        // console.log(this.condition)
+        // 方式
+        this.areaList2.province_list['110000'] =
+          this.condition.rentType[0].label
+        this.areaList2.province_list['120000'] =
+          this.condition.rentType[1].label
+        this.areaList2.province_list['130000'] =
+          this.condition.rentType[2].label
+        // 租金
+        let num = 100000
+        this.condition.price.forEach((item) => {
+          num += 10000
+          this.areaList3.province_list[num] = item.label
+        })
+        // 区域
+        let num2 = 110000
+        this.condition.area.children.forEach((item) => {
+          num2 += 100
+          this.areaList1.city_list[num2] = item.label
+        })
+        // 嵌套太深先把第二层拿出来，再拿到显示数组的key值
+        const keyArr = Object.keys(this.areaList1.city_list)
+        const er = this.condition.area.children
+        // console.log(er)
+        // 循环第二层拿到第二层的所有对象
+        er.forEach((children, index) => {
+          let num3 = keyArr[index]
+          num3 = parseInt(num3)
+          if (!children.children) {
+            return false
+          }
+          // 如果第二层的对象有children就循环取出
+          children.children.forEach((item) => {
+            num3 += 1
+            this.areaList1.county_list[num3] = item.label
+          })
+        })
+        // 地铁
+        let subnum2 = 120000
+        this.condition.subway.children.forEach((item) => {
+          subnum2 += 100
+          this.areaList1.city_list[subnum2] = item.label
+        })
+        // 筛选出以12开头的数组
+        const keyArr12 = Object.keys(this.areaList1.city_list).filter(
+          (item) => {
+            return /^12/.exec(item)
+          }
+        )
+        const subEr = this.condition.subway.children
+        subEr.forEach((children, index) => {
+          let num3 = keyArr12[index]
+          num3 = parseInt(num3)
+          if (!children.children) {
+            return false
+          }
+          // 如果第二层的对象有children就循环取出
+          children.children.forEach((item) => {
+            num3 += 1
+            this.areaList1.county_list[num3] = item.label
+          })
+        })
+
+        this.$toast.success('获取信息成功')
+      } catch (err) {
+        console.log(err)
+        this.$toast.fail('获取信息失败')
+      }
     }
+  },
+  async created() {
+    this.$toast.loading({
+      message: '加载中...',
+      forbidClick: true,
+      duration: 0
+    })
+    // 先获取id，在请求数据
+    await this.getCityId()
+    await this.getFiltrate()
   }
 }
 </script>
@@ -99,6 +354,45 @@ export default {
     /deep/ .van-field__control {
       border-left: 1px solid #ccc;
     }
+  }
+  // 更多筛选条件
+  .FilterMore {
+    padding: 0 15px;
+    .title {
+      margin: 20px 0;
+      font-size: 15px;
+    }
+    .box {
+      margin-left: 40px;
+      border-bottom: 1px solid #e5e5e5;
+      padding-bottom: 14px;
+      .tag {
+        display: inline-block;
+        height: 32px;
+        width: 70px;
+        margin: 0 18px 15px 0;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        line-height: 32px;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+      }
+    }
+    .current {
+      border: 1px solid #21b97a;
+      color: #21b97a;
+      background-color: #defaef;
+    }
+  }
+  .btn-box {
+    position: fixed;
+    display: flex;
+    left: 82px;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    z-index: 9999;
   }
 }
 </style>
