@@ -25,24 +25,41 @@
       </template>
     </van-nav-bar>
     <!-- 筛选标签 -->
-    <van-dropdown-menu>
+    <van-dropdown-menu
+      :class="{
+        currentMenu1: curAreaValueArr,
+        currentMenu2: curWayValue !== '',
+        currentMenu3: curMoneyValue,
+        currentMenu4: curMoreValue
+      }"
+      active-color="#21b97a"
+    >
       <!-- 区域地铁 -->
-      <van-dropdown-item title="区域">
+      <van-dropdown-item title="区域" ref="areaAndSub">
         <template #default>
           <van-area
             title=""
             confirm-button-text=" "
             cancel-button-text=" "
             :area-list="areaList1"
+            @confirm="confirmAreaFn"
+            id="area"
           />
           <div>
-            <van-button type="default" style="width: 40%">取消</van-button>
-            <van-button type="primary" style="width: 60%">确认</van-button>
+            <van-button
+              type="default"
+              style="width: 40%"
+              @click="$refs.areaAndSub.toggle(false)"
+              >取消</van-button
+            >
+            <van-button type="primary" style="width: 60%" @click="fnxxx"
+              >确认</van-button
+            >
           </div>
         </template>
       </van-dropdown-item>
       <!-- 方式 -->
-      <van-dropdown-item title="方式">
+      <van-dropdown-item title="方式" ref="way">
         <template #default>
           <van-area
             title=""
@@ -50,15 +67,24 @@
             cancel-button-text=" "
             :columns-num="1"
             :area-list="areaList2"
+            @confirm="confirmWayFn"
+            id="way"
           />
           <div>
-            <van-button type="default" style="width: 40%">取消</van-button>
-            <van-button type="primary" style="width: 60%">确认</van-button>
+            <van-button
+              type="default"
+              style="width: 40%"
+              @click="$refs.way.toggle(false)"
+              >取消</van-button
+            >
+            <van-button type="primary" style="width: 60%" @click="fnxxx1"
+              >确认</van-button
+            >
           </div>
         </template>
       </van-dropdown-item>
       <!-- 租金 -->
-      <van-dropdown-item title="租金">
+      <van-dropdown-item title="租金" ref="money">
         <template #default>
           <van-area
             title=""
@@ -66,10 +92,19 @@
             cancel-button-text=" "
             :columns-num="1"
             :area-list="areaList3"
+            @confirm="confirmMoneyFn"
+            id="money"
           />
           <div>
-            <van-button type="default" style="width: 40%">取消</van-button>
-            <van-button type="primary" style="width: 60%">确认</van-button>
+            <van-button
+              type="default"
+              style="width: 40%"
+              @click="$refs.money.toggle(false)"
+              >取消</van-button
+            >
+            <van-button type="primary" style="width: 60%" @click="fnxxx2"
+              >确认</van-button
+            >
           </div>
         </template>
       </van-dropdown-item>
@@ -78,7 +113,7 @@
     </van-dropdown-menu>
     <!-- 右边弹出筛选 -->
     <van-popup
-     duration="0"
+      duration="0"
       v-model="filterShow"
       position="right"
       :style="{ height: '100%', width: '70%' }"
@@ -132,24 +167,44 @@
           class="tag"
           v-for="item in condition.characteristic"
           :key="item.value"
+          :class="{
+            current: curNameArr.some((ite) => ite === item.label)
+          }"
+          @click="addCondition(item)"
         >
           {{ item.label }}
         </div>
       </div>
     </van-popup>
     <!-- 按钮 -->
-    <div class="btn-box">
+    <div class="btn-box" v-show="filterShow">
       <van-button type="default" style="width: 40%">取消</van-button>
-      <van-button type="primary" style="width: 60%">确认</van-button>
+      <van-button type="primary" style="width: 60%" @click="moreFilter"
+        >确认</van-button
+      >
     </div>
+    <!-- 列表 -->
+    <houseItem
+      ref="houseList"
+      :curAreaValue="curAreaValueArr"
+      :curWayValue="curWayValue"
+      :curMoneyValue="curMoneyValue"
+      :curMoreValue="curMoreValue"
+    ></houseItem>
   </div>
 </template>
 
 <script>
 import { cityIdAPI, filtrateAPI } from '@/api/index'
+import houseItem from './houseItem.vue'
 export default {
+  components: {
+    houseItem
+  },
   data() {
     return {
+      // house列表
+      houseArr: [],
       // 城市id
       cityValue: '',
       // 所有查询条件
@@ -180,7 +235,14 @@ export default {
       },
       // 右边弹出层选中的数组
       curNameArr: [],
-      curValueArr: []
+      curValueArr: [],
+      // 选中的area或地铁的值
+      curAreaValueArr: '',
+      // 选中方式的值
+      curWayValue: '',
+      // 选中租金的值
+      curMoneyValue: '',
+      curMoreValue: ''
     }
   },
   methods: {
@@ -191,6 +253,13 @@ export default {
     },
     // 点击筛选中的项添加筛选条件
     addCondition(obj) {
+      // 如果存在数组中就删除
+      const rem = this.curNameArr.some((item) => item === obj.label)
+      if (rem) {
+        return (this.curNameArr = this.curNameArr.filter(
+          (item) => item !== obj.label
+        ))
+      }
       this.curNameArr.push(obj.label)
       this.curValueArr.push(obj.value)
     },
@@ -284,6 +353,106 @@ export default {
         console.log(err)
         this.$toast.fail('获取信息失败')
       }
+    },
+    // 点击确认，取到vant的确认按钮
+    async fnxxx() {
+      const confirmBtn = document.querySelector('#area .van-picker__confirm')
+      await confirmBtn.click()
+      this.$refs.areaAndSub.toggle(false)
+    },
+    async fnxxx1() {
+      const confirmBtn = document.querySelector('#way .van-picker__confirm')
+      await confirmBtn.click()
+      this.$refs.way.toggle(false)
+    },
+    async fnxxx2() {
+      const confirmBtn = document.querySelector('#money .van-picker__confirm')
+      await confirmBtn.click()
+      this.$refs.money.toggle(false)
+    },
+    // 得到筛选后的地铁或区域的值
+    getValue(arr) {
+      this.curAreaValueArr = ''
+      if (arr[0].name === '区域') {
+        // 如果第三项有值,就找到对应的值
+        if (arr[2].name && arr[2].name !== '不限') {
+          // 第二级
+          const er = this.condition.area.children
+          const curEr = er.find((item) => {
+            return item.label === arr[1].name
+          })
+          const curSan = curEr.children.find(
+            (item) => item.label === arr[2].name
+          )
+          return (this.curAreaValueArr = curSan.value)
+        }
+        // 如果第二项有值
+        if (arr[1].name && arr[1].name !== '不限') {
+          const er = this.condition.area.children
+          const curEr = er.find((item) => {
+            return item.label === arr[1].name
+          })
+          // 返回选中二的值
+          return (this.curAreaValueArr = curEr.value)
+        }
+        return (this.curAreaValueArr = '')
+      } else {
+        // 地铁项 如果第三项有值,就找到对应的值
+        if (arr[2].name && arr[2].name !== '不限') {
+          // 第二级
+          const er = this.condition.subway.children
+          const curEr = er.find((item) => {
+            return item.label === arr[1].name
+          })
+          const curSan = curEr.children.find(
+            (item) => item.label === arr[2].name
+          )
+          return (this.curAreaValueArr = curSan.value)
+        }
+        // 如果第二项有值
+        if (arr[1].name && arr[1].name !== '不限') {
+          const er = this.condition.subway.children
+          const curEr = er.find((item) => {
+            return item.label === arr[1].name
+          })
+          // 返回选中二的值
+          return (this.curAreaValueArr = curEr.value)
+        }
+        return (this.curAreaValueArr = '')
+      }
+    },
+    // 筛选区域地铁
+    confirmAreaFn(arr) {
+      // console.log(arr)
+      this.getValue(arr)
+    },
+    // 筛选 整租合租
+    confirmWayFn(arr) {
+      // console.log(arr)
+      if (arr[0].name === '整租') {
+        this.curWayValue = true
+      } else if (arr[0].name === '合租') {
+        this.curWayValue = false
+      } else {
+        this.curWayValue = ''
+      }
+    },
+    // 筛选租金
+    confirmMoneyFn(arr) {
+      // console.log(arr)
+      if (arr[0].name !== '不限') {
+        this.curMoneyValue = this.condition.price.find(
+          (item) => arr[0].name === item.label
+        ).value
+      } else {
+        this.curMoneyValue = ''
+      }
+    },
+    // 筛选更多
+    moreFilter() {
+      // console.log(this.curValueArr)
+      this.curMoreValue = this.curValueArr.join(',')
+      console.log(this.curMoreValue)
     }
   },
   async created() {
@@ -301,6 +470,7 @@ export default {
 
 <style lang="less" scoped>
 .zf-page {
+  padding-bottom: 100px;
   .van-nav-bar {
     background-color: #21b97a;
     /deep/ .van-nav-bar__title {
@@ -393,6 +563,35 @@ export default {
     bottom: 0;
     background-color: #fff;
     z-index: 9999;
+  }
+  // 选中时的菜单
+  .currentMenu1 {
+    /deep/ .van-dropdown-menu__bar .van-dropdown-menu__item:nth-child(1) {
+      .van-dropdown-menu__title {
+        color: #21b97a;
+      }
+    }
+  }
+  .currentMenu2 {
+    /deep/ .van-dropdown-menu__bar .van-dropdown-menu__item:nth-child(2) {
+      .van-dropdown-menu__title {
+        color: #21b97a;
+      }
+    }
+  }
+  .currentMenu3 {
+    /deep/ .van-dropdown-menu__bar .van-dropdown-menu__item:nth-child(3) {
+      .van-dropdown-menu__title {
+        color: #21b97a;
+      }
+    }
+  }
+  .currentMenu4 {
+    /deep/ .van-dropdown-menu__bar .van-dropdown-menu__item:nth-child(4) {
+      .van-dropdown-menu__title {
+        color: #21b97a;
+      }
+    }
   }
 }
 </style>
