@@ -4,6 +4,13 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  // 地图找房
+  {
+    path: '/map',
+    component: () => {
+      return import('@/views/map/index')
+    }
+  },
   // 城市列表
   {
     path: '/city',

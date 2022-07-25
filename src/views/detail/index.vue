@@ -61,7 +61,9 @@
     <!-- 地图部分 -->
     <div class="map">
       <div class="map-title">小区：{{ detailObj.community }}</div>
-      <div class="map-con"></div>
+      <div class="map-con" v-if="detailObj.coord">
+        <houseMap :coord="detailObj.coord"></houseMap>
+      </div>
     </div>
     <!-- 房屋配套 -->
     <div class="mating">
@@ -153,7 +155,11 @@ import {
   addShoucangAPI,
   removeShoucangAPI
 } from '@/api/index'
+import houseMap from './houseMap.vue'
 export default {
+  components: {
+    houseMap
+  },
   data() {
     return {
       detailObj: {},
@@ -161,7 +167,7 @@ export default {
       iconObj: {
         热水器: 'icon-haofangtuo400iconfont2reshuiqi',
         天然气: 'icon-meiqitianranqi',
-        电视机: 'icon-dianshiji',
+        电视: 'icon-dianshiji',
         冰箱: 'icon-bingxiang',
         洗衣机: 'icon-xiyiji',
         空调: 'icon-kongtiao',
@@ -359,7 +365,7 @@ body {
       font-size: 14px;
     }
     .map-con {
-      background: pink;
+      // background: pink;
       // position: absolute;
       // left: 0px;
       // top: 0px;

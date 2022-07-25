@@ -16,27 +16,28 @@
       >
         <template #left-icon>
           <div class="leftbox" @click="goCity">
-            <span>{{$store.state.cityName}}</span> <van-icon name="arrow-down" />
+            <span>{{ $store.state.cityName }}</span>
+            <van-icon name="arrow-down" />
           </div>
         </template>
       </van-search>
-      <div class="icon-map">
+      <div class="icon-map" @click="goMap">
         <van-icon name="aim" />
       </div>
     </div>
     <!-- 宫格 -->
     <van-grid class="home-grid" :border="false">
-      <van-grid-item text="整租">
+      <van-grid-item text="整租" @click="gofilter">
         <template #icon>
           <img :src="srcs[0]" alt="" class="grid-img" />
         </template>
       </van-grid-item>
-      <van-grid-item text="合租">
+      <van-grid-item text="合租" @click="gofilter">
         <template #icon>
           <img :src="srcs[1]" alt="" class="grid-img" />
         </template>
       </van-grid-item>
-      <van-grid-item text="地图找房">
+      <van-grid-item text="地图找房" @click="goMap">
         <template #icon>
           <img :src="srcs[2]" alt="" class="grid-img" />
         </template>
@@ -110,6 +111,12 @@ export default {
     },
     goCity() {
       this.$router.push('/city')
+    },
+    goMap() {
+      this.$router.push('/map')
+    },
+    gofilter() {
+      this.$router.push('/zf')
     }
   }
 }
